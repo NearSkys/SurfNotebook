@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas - SurfNotebook</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding-bottom: 100px; /* Add padding for the floating button */
+        }
+        
+        .floating-add-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+            cursor: pointer;
+            z-index: 40;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            visibility: hidden;
+        }
+        
+        .floating-add-button.visible {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+        
+        .floating-add-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 24px rgba(6, 182, 212, 0.4);
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(4px);
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 1rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(20px);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        /* Estilos para as estrelas de avaliação */
+        .rating-stars {
+            display: inline-flex;
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+        
+        .rating-stars .star {
+            color: #4B5563;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: color 0.2s;
+            padding: 0 2px;
+        }
+        
+        .rating-stars .star:hover,
+        .rating-stars .star:hover ~ .star,
+        .rating-stars .star.selected,
+        .rating-stars .star.selected ~ .star {
+            color: #F59E0B;
+        }
+        
+        /* Estilos para os campos do formulário */
+        input[type="text"],
+        input[type="date"],
+        input[type="number"],
+        textarea,
+        select {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: white !important;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: #06B6D4 !important;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.2) !important;
+        }
+        
+        /* Estilização personalizada para os selects */
+        .custom-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CA3AF'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1em 1em;
+            padding-right: 2.5rem !important;
+        }
+        
+        /* Estilo para o botão de adicionar nota */
+        .add-note-card {
+            transition: all 0.3s ease;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .add-note-card:hover {
+            border-color: #06B6D4;
+            background-color: rgba(6, 182, 212, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        /* Estilo para as notas */
+        .note-card {
+            transition: all 0.3s ease;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        
+        .note-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Estilos para o menu mobile */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Estilos para os cards de notas */
+        .note-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .note-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Estilos para o modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        ::-webkit-scrollbar {
+            width: 0;  /* Remove scrollbar space */
+            height: 0;  /* Hide vertical scrollbar */
+            background: transparent;  /* Optional: just make scrollbar invisible */
+        }
+        
+        /* Hide scrollbar for IE, Edge and Firefox */
+        html {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Ensure scrolling still works */
+        body {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari and Opera */
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar-thumb {
+            background: #0ea5e9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <!-- Container do Vídeo de Fundo -->
+    <div class="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="4611986-uhd_3840_2160_30fps.mp4" type="video/mp4">
+            O seu navegador não suporta a tag de vídeo.
+        </video>
+    </div>
+    <!-- Overlay para legibilidade -->
+    <div class="video-overlay"></div>
+
+    <!-- Conteúdo Sobreposto -->
+    <div class="relative z-10 flex flex-col min-h-screen text-white">
+        <!-- Cabeçalho Transparente -->
+        <header class="w-full px-6 sm:px-10 py-5">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-shadow">SurfNotebook</a>
+                <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="index.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Home</a>
+                    <a href="sobre.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Sobre</a>
+                    <a href="notas.html" class="text-sm font-medium text-cyan-300 transition-colors">Notas</a>
+                    <a href="contato.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Contato</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Menu Mobile -->
+        <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-70 backdrop-blur-sm w-full">
+            <a href="index.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Home</a>
+            <a href="sobre.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Sobre</a>
+            <a href="notas.html" class="block text-center py-3 text-sm bg-white/10 text-cyan-300 transition-colors">Notas</a>
+            <a href="contato.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Contato</a>
+        </div>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-grow px-4 sm:px-6 py-8">
+        <div class="container mx-auto max-w-7xl">
+            <!-- Cabeçalho -->
+            <div class="text-center mb-10">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3 text-shadow">Minhas Anotações</h1>
+                <p class="text-gray-300 max-w-2xl mx-auto">Acompanhe suas sessões de surf, registre suas experiências e melhore sua performance.</p>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="bg-black/30 backdrop-blur-sm rounded-xl p-6 mb-8 border border-white/10">
+                <div class="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+                    <!-- Barra de Busca -->
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
+                        <input type="text" id="search-notes" 
+                               class="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-white placeholder-gray-400" 
+                               placeholder="Buscar nas anotações...">
+                    </div>
+                    
+                    <!-- Botão Nova Anotação -->
+                    <button id="add-note-btn" 
+                            class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                        <i class="fas fa-plus"></i> Nova Anotação
+                    </button>
+                </div>
+                
+                <!-- Filtros Avançados -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Filtro por Local -->
+                    <div>
+                        <label for="filter-location" class="block text-sm font-medium text-gray-300 mb-1">Local</label>
+                        <div class="relative">
+                            <select id="filter-location" 
+                                    class="w-full bg-white/5 border border-white/10 text-white rounded-full px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent appearance-none pr-10">
+                                <option value="" class="bg-gray-800 text-white">Todas as praias</option>
+                                <option class="bg-gray-800 text-white">Praia do Rosa - SC</option>
+                                <option class="bg-gray-800 text-white">Praia da Joaquina - SC</option>
+                                <option class="bg-gray-800 text-white">Praia Mole - SC</option>
+                                <option class="bg-gray-800 text-white">Praia Brava - SC</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtro por Avaliação -->
+                    <div>
+                        <label for="filter-rating" class="block text-sm font-medium text-gray-300 mb-1">Avaliação</label>
+                        <div class="relative">
+                            <select id="filter-rating" 
+                                    class="w-full bg-white/5 border border-white/10 text-white rounded-full px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent appearance-none pr-10">
+                                <option value="" class="bg-gray-800 text-white">Todas as avaliações</option>
+                                <option value="5" class="bg-gray-800 text-white">⭐ 5 Estrelas</option>
+                                <option value="4" class="bg-gray-800 text-white">⭐ 4 Estrelas</option>
+                                <option value="3" class="bg-gray-800 text-white">⭐ 3 Estrelas</option>
+                                <option value="2" class="bg-gray-800 text-white">⭐ 2 Estrelas</option>
+                                <option value="1" class="bg-gray-800 text-white">⭐ 1 Estrela</option>
+                            </select>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <i class="fas fa-chevron-down text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtro por Data -->
+                    <div>
+                        <label for="filter-date" class="block text-sm font-medium text-gray-300 mb-1">Data</label>
+                        <div class="relative">
+                            <input type="date" id="filter-date" 
+                                   class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    
+                    <!-- Botão Limpar Filtros -->
+                    <div class="flex items-end">
+                        <button id="clear-filters" 
+                                class="w-full bg-transparent hover:bg-white/5 border border-white/10 text-white font-medium py-2.5 px-4 rounded-lg transition-colors">
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de Notas -->
+            <div class="mb-10">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Suas Anotações</h2>
+                    <span id="notes-count" class="text-sm text-gray-400">2 anotações encontradas</span>
+                </div>
+                
+                <div id="notes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- As notas serão renderizadas aqui via JavaScript -->
+                </div>
+                
+                <!-- Card para Adicionar Nova Nota (estilizado igual aos outros cards) -->
+                <div id="add-note-card" class="hidden note-card rounded-xl overflow-hidden border border-white/10 hover:border-cyan-500/50 transition-all duration-300">
+                    <div class="p-5 h-full flex flex-col items-center justify-center text-center cursor-pointer" id="add-note-button">
+                        <div class="w-12 h-12 rounded-full bg-cyan-900/30 border-2 border-dashed border-cyan-500/50 flex items-center justify-center mb-3">
+                            <i class="fas fa-plus text-cyan-400 text-xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-cyan-300 mb-1">Adicionar Nota</h3>
+                        <p class="text-sm text-gray-400">Clique para registrar uma nova sessão de surf</p>
+                    </div>
+                </div>
+                </div>
+                
+                <!-- Mensagem quando não há notas -->
+                <div id="no-notes" class="hidden text-center py-16 px-6 rounded-xl border-2 border-dashed border-white/10">
+                    <div class="mx-auto w-16 h-16 rounded-full bg-cyan-900/20 flex items-center justify-center mb-4">
+                        <i class="fas fa-surfing text-3xl text-cyan-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-white mb-1">Nenhuma anotação encontrada</h3>
+                    <p class="text-gray-400 max-w-md mx-auto mb-6">Parece que você ainda não tem nenhuma anotação. Crie sua primeira anotação clicando no botão abaixo.</p>
+                    <button id="add-first-note" class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 px-6 rounded-lg transition-colors inline-flex items-center gap-2">
+                        <i class="fas fa-plus"></i> Criar Primeira Anotação
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Floating Add Button -->
+        <div class="floating-add-button" id="floating-add-button" title="Adicionar Nova Anotação">
+            <i class="fas fa-plus text-xl"></i>
+        </div>
+    </main>
+
+    <!-- Modal para Adicionar/Editar Nota -->
+    <div id="note-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 invisible transition-opacity duration-300">
+        <div class="bg-gray-800/90 backdrop-blur-md border border-white/5 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 scale-95">
+            <div class="sticky top-0 bg-gray-800/80 backdrop-blur-sm z-10 p-6 border-b border-white/5">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Nova Anotação</h2>
+                    <button id="close-modal" class="text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/5 rounded-full">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="note-form" class="p-6 space-y-5 bg-gradient-to-b from-gray-800/50 to-gray-900/50">
+                <input type="hidden" id="note-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label for="note-title" class="block text-sm font-medium text-gray-300">Título *</label>
+                        <input type="text" id="note-title" required
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-location" class="block text-sm font-medium text-gray-300">Local *</label>
+                        <select id="note-location" required
+                                class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                            <option value="">Selecione um local</option>
+                            <option>Praia do Rosa - SC</option>
+                            <option>Praia da Joaquina - SC</option>
+                            <option>Praia Mole - SC</option>
+                            <option>Praia Brava - SC</option>
+                            <option>Outro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-date" class="block text-sm font-medium text-gray-300">Data *</label>
+                        <input type="date" id="note-date" required
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-rating" class="block text-sm font-medium text-gray-300">Avaliação *</label>
+                        <div class="rating-stars flex items-center">
+                            <input type="hidden" id="note-rating" value="0" required>
+                            <div class="flex space-x-1">
+                                <i class="far fa-star text-yellow-400 text-xl cursor-pointer" data-rating="1"></i>
+                                <i class="far fa-star text-yellow-400 text-xl cursor-pointer" data-rating="2"></i>
+                                <i class="far fa-star text-yellow-400 text-xl cursor-pointer" data-rating="3"></i>
+                                <i class="far fa-star text-yellow-400 text-xl cursor-pointer" data-rating="4"></i>
+                                <i class="far fa-star text-yellow-400 text-xl cursor-pointer" data-rating="5"></i>
+                            </div>
+                            <span id="rating-value" class="ml-2 text-sm text-gray-400">0.0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-wind" class="block text-sm font-medium text-gray-300">Vento (km/h)</label>
+                        <input type="number" id="note-wind" min="0" step="0.1"
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-wave-height" class="block text-sm font-medium text-gray-300">Altura da Onda (m)</label>
+                        <input type="number" id="note-wave-height" min="0" step="0.1"
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-temperature" class="block text-sm font-medium text-gray-300">Temperatura (°C)</label>
+                        <input type="number" id="note-temperature" min="-50" max="50" step="0.1"
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent">
+                    </div>
+                    
+                    <div class="space-y-1">
+                        <label for="note-board" class="block text-sm font-medium text-gray-300">Prancha Utilizada</label>
+                        <input type="text" id="note-board"
+                               class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                               placeholder="Ex: 6'2\" Shortboard">
+                    </div>
+                </div>
+                
+                <div class="space-y-1">
+                    <label for="note-description" class="block text-sm font-medium text-gray-300">Descrição *</label>
+                    <textarea id="note-description" rows="4" required
+                              class="w-full bg-white/5 border border-white/10 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                              placeholder="Descreva como foi sua sessão de surf, condições do mar, dicas, etc."></textarea>
+                </div>
+                
+                <div class="flex justify-end space-x-3 pt-4 border-t border-white/10">
+                    <button type="button" id="cancel-note"
+                            class="px-5 py-2.5 text-sm font-medium rounded-lg border border-white/10 hover:bg-white/5 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="save-note"
+                            class="px-5 py-2.5 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition-colors flex items-center gap-2">
+                        <i class="fas fa-save"></i> Salvar Anotação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer class="py-6 text-sm text-white/80 relative border-t border-white/10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center">
+                <p class="text-center">&copy; 2025 SurfNotebook. Todos os direitos reservados.</p>
+                <div class="absolute right-4 flex space-x-4">
+                    <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/matheussopinheiro/" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Twitter" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+
+    <!-- Scripts -->
+    <script>
+    // Aguarda o DOM ser completamente carregado antes de executar o script
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- SELETORES DE ELEMENTOS DO DOM --- //
+        const noteModal = document.getElementById('note-modal');
+        const noteForm = document.getElementById('note-form');
+        const notesContainer = document.getElementById('notes-container');
+        const noNotesMessage = document.getElementById('no-notes');
+        const notesCount = document.getElementById('notes-count');
+
+        // Botões para abrir o modal
+        const addNoteBtn = document.getElementById('add-note-btn');
+        const addFirstNoteBtn = document.getElementById('add-first-note');
+
+        // Botões do modal
+        const closeModalBtn = document.getElementById('close-modal');
+        const cancelNoteBtn = document.getElementById('cancel-note');
+
+        // Campos do formulário
+        const noteIdInput = document.getElementById('note-id');
+        const noteTitleInput = document.getElementById('note-title');
+        const noteLocationInput = document.getElementById('note-location');
+        const noteDateInput = document.getElementById('note-date');
+        const noteRatingInput = document.getElementById('note-rating');
+        const ratingStarsContainer = document.querySelector('.rating-stars .flex');
+        const ratingStars = ratingStarsContainer ? ratingStarsContainer.querySelectorAll('i') : [];
+        const ratingValueDisplay = document.getElementById('rating-value');
+        const noteDescriptionInput = document.getElementById('note-description');
+        
+        // Campos de filtros
+        const searchInput = document.getElementById('search-notes');
+        const filterLocation = document.getElementById('filter-location');
+        const filterRating = document.getElementById('filter-rating');
+        const filterDate = document.getElementById('filter-date');
+        const clearFiltersBtn = document.getElementById('clear-filters');
+
+        // Botão de teste
+        const testButton = document.getElementById('test-button');
+
+        // --- ESTADO DA APLICAÇÃO --- //
+        // Carrega as notas do localStorage ou inicia um array vazio
+        let notes = JSON.parse(localStorage.getItem('surfNotes')) || [];
+
+        // --- FUNÇÕES --- //
+
+        /**
+         * Salva o array de notas no localStorage.
+         */
+        const saveNotes = () => {
+            localStorage.setItem('surfNotes', JSON.stringify(notes));
+        };
+
+        /**
+         * Renderiza as notas na tela, aplicando os filtros atuais.
+         */
+        const renderNotes = () => {
+            // Limpa o container de notas
+            if (!notesContainer) return;
+            notesContainer.innerHTML = '';
+
+            // Filtra as notas
+            const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+            const locationFilterValue = filterLocation ? filterLocation.value : '';
+            const ratingFilterValue = filterRating ? filterRating.value : '';
+            const dateFilterValue = filterDate ? filterDate.value : '';
+
+            const filteredNotes = notes.filter(note => {
+                const matchesSearch = note.title.toLowerCase().includes(searchTerm) || 
+                                    (note.description && note.description.toLowerCase().includes(searchTerm)) ||
+                                    note.location.toLowerCase().includes(searchTerm);
+                const matchesLocation = !locationFilterValue || note.location === locationFilterValue;
+                const matchesRating = !ratingFilterValue || note.rating == ratingFilterValue;
+                const matchesDate = !dateFilterValue || note.date === dateFilterValue;
+
+                return matchesSearch && matchesLocation && matchesRating && matchesDate;
+            });
+
+            // Atualiza a contagem de notas
+            if (notesCount) {
+                notesCount.textContent = `${filteredNotes.length} anotação${filteredNotes.length !== 1 ? 'ões' : ''} encontrada${filteredNotes.length !== 1 ? 's' : ''}`;
+            }
+
+            // Limpa o container
+            notesContainer.innerHTML = '';
+
+            // Verifica se há notas para exibir
+            if (filteredNotes.length === 0) {
+                if (noNotesMessage) noNotesMessage.classList.remove('hidden');
+                if (addNoteCard) addNoteCard.classList.add('hidden');
+                return;
+            }
+
+            // Esconde a mensagem de nenhuma nota
+            if (noNotesMessage) noNotesMessage.classList.add('hidden');
+            
+            // Adiciona as notas ao container
+            filteredNotes.forEach(note => {
+                const noteElement = document.createElement('div');
+                noteElement.innerHTML = createNoteCard(note);
+                notesContainer.appendChild(noteElement.firstElementChild);
+            });
+
+                // Mostra o card de adicionar nota e o botão flutuante se houver notas
+            // Mostra/oculta o card de adicionar nota e o botão flutuante
+            const floatingButton = document.getElementById('floating-add-button');
+            const hasNotes = filteredNotes.length > 0;
+            
+            if (addNoteCard) {
+                if (hasNotes) {
+                    addNoteCard.classList.remove('hidden');
+                    notesContainer.appendChild(addNoteCard);
+                } else {
+                    addNoteCard.classList.add('hidden');
+                }
+            }
+            
+            if (floatingButton) {
+                if (hasNotes) {
+                    floatingButton.classList.add('visible');
+                } else {
+                    floatingButton.classList.remove('visible');
+                }
+            }
+        };
+
+        /**
+         * Gera o HTML para um único card de nota.
+         * @param {object} note - O objeto da nota.
+         * @returns {string} O HTML do card.
+         */
+        const createNoteCard = (note) => {
+            const ratingColor = note.rating >= 4 ? 'cyan' : (note.rating >= 2.5 ? 'amber' : 'red');
+            const formattedDate = new Date(note.date + 'T00:00:00').toLocaleDateString('pt-BR');
+
+            return `
+            <div class="note-card rounded-xl overflow-hidden border border-white/10 hover:border-${ratingColor}-500/50 transition-all duration-300" data-id="${note.id}">
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="font-bold text-lg text-${ratingColor}-300">${note.title}</h3>
+                            <p class="text-sm text-gray-400">${note.location}</p>
+                        </div>
+                        <span class="bg-${ratingColor}-900/50 text-${ratingColor}-300 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                            ⭐ ${Number(note.rating).toFixed(1)}
+                        </span>
+                    </div>
+                    
+                    <div class="text-sm text-gray-300 mb-4">
+                        <p class="line-clamp-3">${note.description || 'Sem descrição'}</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        ${note.wind ? `<span class="inline-flex items-center text-xs bg-white/5 px-2.5 py-1 rounded-full"><i class="fas fa-wind text-${ratingColor}-400 mr-1.5"></i> Vento: ${note.wind}km/h</span>` : ''}
+                        ${note.waveHeight ? `<span class="inline-flex items-center text-xs bg-white/5 px-2.5 py-1 rounded-full"><i class="fas fa-water text-${ratingColor}-400 mr-1.5"></i> Altura: ${note.waveHeight}m</span>` : ''}
+                        ${note.temperature ? `<span class="inline-flex items-center text-xs bg-white/5 px-2.5 py-1 rounded-full"><i class="fas fa-thermometer-half text-${ratingColor}-400 mr-1.5"></i> ${note.temperature}°C</span>` : ''}
+                    </div>
+                    
+                    <div class="flex justify-between items-center text-xs text-gray-400 border-t border-white/10 pt-3 mt-3">
+                        <span>${formattedDate}</span>
+                        <div class="flex space-x-3">
+                            <button class="edit-note text-cyan-400 hover:text-cyan-300 transition-colors" aria-label="Editar nota"><i class="fas fa-edit"></i></button>
+                            <button class="delete-note text-red-400 hover:text-red-300 transition-colors" aria-label="Deletar nota"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+        };
+        
+        /**
+         * Abre o modal, opcionalmente preenchendo-o com dados de uma nota existente.
+         * @param {object|null} noteToEdit - O objeto da nota para editar, ou null para criar uma nova.
+         */
+        const openModal = (noteToEdit = null) => {
+            if (!noteForm) return;
+            
+            noteForm.reset();
+            if (noteToEdit) {
+                // Modo de edição
+                const title = document.querySelector('#note-modal h2');
+                if (title) title.textContent = 'Editar Anotação';
+                
+                if (noteIdInput) noteIdInput.value = noteToEdit.id || '';
+                if (noteTitleInput) noteTitleInput.value = noteToEdit.title || '';
+                if (noteLocationInput) noteLocationInput.value = noteToEdit.location || '';
+                if (noteDateInput) noteDateInput.value = noteToEdit.date || '';
+                if (noteDescriptionInput) noteDescriptionInput.value = noteToEdit.description || '';
+                
+                // Preenche campos opcionais
+                const noteWindInput = document.getElementById('note-wind');
+                const noteWaveHeightInput = document.getElementById('note-wave-height');
+                const noteTemperatureInput = document.getElementById('note-temperature');
+                const noteBoardInput = document.getElementById('note-board');
+                
+                if (noteWindInput) noteWindInput.value = noteToEdit.wind || '';
+                if (noteWaveHeightInput) noteWaveHeightInput.value = noteToEdit.waveHeight || '';
+                if (noteTemperatureInput) noteTemperatureInput.value = noteToEdit.temperature || '';
+                if (noteBoardInput) noteBoardInput.value = noteToEdit.board || '';
+                
+                updateRatingStars(noteToEdit.rating || 0);
+            } else {
+                // Modo de adição
+                const title = document.querySelector('#note-modal h2');
+                if (title) title.textContent = 'Nova Anotação';
+                
+                if (noteIdInput) noteIdInput.value = '';
+                updateRatingStars(0);
+                if (noteDateInput) noteDateInput.valueAsDate = new Date();
+            }
+            
+            if (noteModal) {
+                // Mostra o modal
+                noteModal.classList.remove('invisible', 'opacity-0');
+                // Força o navegador a renderizar o estado inicial
+                void noteModal.offsetWidth;
+                // Adiciona as classes para a animação
+                noteModal.classList.add('opacity-100');
+                noteModal.querySelector('div').classList.add('scale-100');
+            }
+        };
+
+        /**
+         * Fecha o modal.
+         */
+        const closeModal = () => {
+            if (!noteModal) return;
+            
+            // Inicia a animação de saída
+            noteModal.classList.remove('opacity-100');
+            noteModal.querySelector('div').classList.remove('scale-100');
+            
+            // Esconde o modal após a animação
+            setTimeout(() => {
+                noteModal.classList.add('invisible', 'opacity-0');
+            }, 300);
+        };
+
+        /**
+         * Atualiza o estado visual das estrelas e o valor do input de avaliação.
+         * @param {number} rating - O valor da avaliação (0 a 5).
+         */
+        const updateRatingStars = (rating) => {
+            if (!ratingStarsContainer || !ratingValueDisplay) return;
+            
+            if (noteRatingInput) noteRatingInput.value = rating;
+            if (ratingValueDisplay) ratingValueDisplay.textContent = Number(rating).toFixed(1);
+            
+            ratingStars.forEach(star => {
+                const starRating = star.dataset.rating;
+                if (starRating <= rating) {
+                    star.classList.remove('far'); // far = outline
+                    star.classList.add('fas');   // fas = solid
+                    star.style.color = '#F59E0B';
+                } else {
+                    star.classList.remove('fas');
+                    star.classList.add('far');
+                    star.style.color = '#F59E0B';
+                }
+            });
+        };
+        
+        /**
+         * Limpa todos os filtros e renderiza as notas novamente.
+         */
+        const clearFilters = () => {
+            if (searchInput) searchInput.value = '';
+            if (filterLocation) filterLocation.value = '';
+            if (filterRating) filterRating.value = '';
+            if (filterDate) filterDate.value = '';
+            renderNotes();
+        };
+
+        // --- EVENT LISTENERS --- //
+
+        // Abrir o modal pelos botões de adicionar nota
+        const addNoteButtons = [
+            addNoteBtn, 
+            document.getElementById('add-note-button'), 
+            document.getElementById('add-first-note'),
+            document.getElementById('floating-add-button')
+        ];
+        
+        addNoteButtons.forEach(btn => {
+            if (btn) {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    openModal();
+                });
+            }
+        });
+        
+        if (addFirstNoteBtn) {
+            addFirstNoteBtn.addEventListener('click', () => openModal());
+        }
+        
+        // Fechar o modal
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', closeModal);
+        }
+        
+        if (cancelNoteBtn) {
+            cancelNoteBtn.addEventListener('click', closeModal);
+        }
+        
+        if (noteModal) {
+            noteModal.addEventListener('click', (e) => {
+                // Fecha o modal se o clique for no overlay (fundo)
+                if (e.target === noteModal) {
+                    closeModal();
+                }
+            });
+        }
+        
+        // Submissão do formulário (salvar/editar nota)
+        if (noteForm) {
+            noteForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const id = noteIdInput ? noteIdInput.value : null;
+                const newNote = {
+                    title: noteTitleInput ? noteTitleInput.value : 'Sem título',
+                    location: noteLocationInput ? noteLocationInput.value : 'Não especificado',
+                    date: noteDateInput ? noteDateInput.value : new Date().toISOString().split('T')[0],
+                    rating: noteRatingInput ? parseFloat(noteRatingInput.value) || 0 : 0,
+                    description: noteDescriptionInput ? noteDescriptionInput.value : '',
+                    wind: document.getElementById('note-wind') ? document.getElementById('note-wind').value : '',
+                    waveHeight: document.getElementById('note-wave-height') ? document.getElementById('note-wave-height').value : '',
+                    temperature: document.getElementById('note-temperature') ? document.getElementById('note-temperature').value : '',
+                    board: document.getElementById('note-board') ? document.getElementById('note-board').value : ''
+                };
+
+                if (id) {
+                    // Editando uma nota existente
+                    const noteIndex = notes.findIndex(note => note.id == id);
+                    if (noteIndex > -1) {
+                        notes[noteIndex] = { ...notes[noteIndex], ...newNote };
+                    }
+                } else {
+                    // Criando uma nova nota
+                    newNote.id = Date.now();
+                    notes.unshift(newNote);
+                }
+
+                saveNotes();
+                renderNotes();
+                closeModal();
+            });
+        }
+
+        // Manipulação das notas (Editar/Deletar)
+        if (notesContainer) {
+            notesContainer.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-note');
+                const deleteBtn = e.target.closest('.delete-note');
+
+                if (editBtn) {
+                    const noteCard = editBtn.closest('.note-card');
+                    if (!noteCard) return;
+                    
+                    const noteId = noteCard.dataset.id;
+                    const noteToEdit = notes.find(note => note.id == noteId);
+                    if (noteToEdit) {
+                        openModal(noteToEdit);
+                    }
+                }
+
+                if (deleteBtn) {
+                    const noteCard = deleteBtn.closest('.note-card');
+                    if (!noteCard) return;
+                    
+                    const noteId = noteCard.dataset.id;
+                    
+                    // Confirmação antes de deletar
+                    if (confirm('Tem certeza que deseja apagar esta anotação? Esta ação não pode ser desfeita.')) {
+                        notes = notes.filter(note => note.id != noteId);
+                        saveNotes();
+                        renderNotes();
+                    }
+                }
+            });
+        }
+        
+        // Lógica das estrelas de avaliação
+        if (ratingStarsContainer) {
+            ratingStarsContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'I') {
+                    const rating = e.target.dataset.rating;
+                    updateRatingStars(rating);
+                }
+            });
+            
+            ratingStarsContainer.addEventListener('mouseover', (e) => {
+                if (e.target.tagName !== 'I') return;
+                const currentRating = e.target.dataset.rating;
+                ratingStars.forEach(star => {
+                    if (star.dataset.rating <= currentRating) {
+                        star.classList.add('fas');
+                        star.classList.remove('far');
+                    } else {
+                        star.classList.add('far');
+                        star.classList.remove('fas');
+                    }
+                });
+            });
+
+            ratingStarsContainer.addEventListener('mouseout', () => {
+                // Retorna ao estado salvo quando o mouse sai
+                updateRatingStars(noteRatingInput ? parseFloat(noteRatingInput.value) || 0 : 0);
+            });
+        }
+
+        // Listeners dos filtros
+        if (searchInput) searchInput.addEventListener('input', renderNotes);
+        if (filterLocation) filterLocation.addEventListener('change', renderNotes);
+        if (filterRating) filterRating.addEventListener('change', renderNotes);
+        if (filterDate) filterDate.addEventListener('change', renderNotes);
+        if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
+
+        // Listener do botão de teste
+        if (testButton) {
+            testButton.addEventListener('click', () => {
+                if (confirm('Isso adicionará duas notas de exemplo. Deseja continuar?')) {
+                    const exampleNotes = [
+                        {
+                            id: 1,
+                            title: "Sessão Matinal Clássica",
+                            location: "Praia Mole - SC",
+                            date: "2024-07-20",
+                            rating: 4.5,
+                            description: "Ondas limpas de 1-1.5m, vento fraco de leste. Melhor sessão do mês!",
+                            wind: "10 km/h Leste",
+                            waveHeight: "1.5",
+                            temperature: "22",
+                            board: "Twin Fin 5'8"
+                        },
+                        {
+                            id: 2,
+                            title: "Surf Noturno com Lua Cheia",
+                            location: "Praia do Rosa - SC",
+                            date: "2024-07-15",
+                            rating: 3.5,
+                            description: "Ondas um pouco bagunçadas mas com alguns picos bons. Água gelada.",
+                            wind: "15 km/h Nordeste",
+                            waveHeight: "1.2",
+                            temperature: "19",
+                            board: "Fish 5'6"
+                        }
+                    ];
+                    
+                    notes = [...notes, ...exampleNotes];
+                    saveNotes();
+                    renderNotes();
+                }
+            });
+        }
+
+        // Inicialização
+        renderNotes();
+        
+
+    });
+    </script>
+    
+
+</body>
+</html>

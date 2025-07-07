@@ -1,0 +1,67 @@
+# Arquivos de texto e documentação
+*.txt
+*.log
+*.md
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos temporários
+*.tmp
+*.temp
+*~
+
+# Arquivos de backup
+*.bak
+*.backup
+*.old
+
+# Arquivos de IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Arquivos de dependências (se usar npm/yarn)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Arquivos de build/distribuição
+dist/
+build/
+out/
+
+# Arquivos de cache
+.cache/
+.temp/
+
+# Arquivos de configuração local
+.env
+.env.local
+.env.production
+
+# Arquivos de mídia grandes (opcional - descomente se quiser ignorar)
+# *.mp4
+# *.avi
+# *.mov
+# *.wmv
+
+# Arquivos de compressão
+
+*.rar
+*.7z
+*.tar.gz
+
+# Arquivos de banco de dados
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de configuração do sistema
+*.ini
+*.cfg
+*.conf 

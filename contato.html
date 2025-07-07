@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+Telefone<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato - SurfNotebook</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            background: transparent;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        /* --- Estilos para o Fundo com Vídeo MP4 --- */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* Estilos para o menu mobile */
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Estilos para o formulário */
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 9999px; /* Totalmente arredondado */
+            padding: 0.75rem 1.5rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+        }
+        
+        .form-textarea {
+            border-radius: 1.5rem; /* Arredondado, mas não tanto quanto os outros campos */
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23a1a1aa' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .form-input::placeholder, .form-textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.3);
+            background-color: rgba(6, 182, 212, 0.05);
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 0.5rem;
+            margin-left: 0.5rem;
+        }
+        
+        .form-label::after {
+            content: ' *';
+            color: #f43f5e;
+            font-weight: bold;
+        }
+        
+        .form-label.optional::after {
+            content: '';
+        }
+
+        /* Estilos para botões */
+        .btn-primary {
+            background-color: #0891b2;
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            text-align: center;
+            display: inline-block;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0e7490;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 500;
+            padding: 0.625rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Estilos para os cards de contato */
+        .contact-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            border-color: rgba(8, 145, 178, 0.5);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Estilos para o mapa */
+        .map-container {
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-black">
+            <div class="video-background">
+            <video autoplay loop muted playsinline>
+                <source src="4611986-uhd_3840_2160_30fps.mp4" type="video/mp4">
+                O seu navegador não suporta a tag de vídeo.
+            </video>
+        </div>
+        <div class="video-overlay"></div>
+
+        <div class="relative z-10 flex flex-col min-h-screen text-white">
+            <header class="w-full px-6 sm:px-10 py-5">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-shadow">SurfNotebook</a>
+                <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="index.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Home</a>
+                    <a href="sobre.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Sobre</a>
+                    <a href="notas.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Notas</a>
+                    <a href="contato.html" class="text-sm font-medium text-cyan-300 transition-colors">Contato</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-70 backdrop-blur-sm w-full">
+            <a href="index.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Home</a>
+            <a href="sobre.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Sobre</a>
+            <a href="notas.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Notas</a>
+            <a href="contato.html" class="block text-center py-3 text-sm bg-white/10 text-cyan-300 transition-colors">Contato</a>
+        </div>
+
+    <main class="flex-grow py-12 px-4 sm:px-6">
+        <div class="container mx-auto max-w-7xl">
+            <div class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold mb-3 text-shadow">Entre em Contato</h1>
+                <p class="text-lg text-gray-300 max-w-2xl mx-auto">Estamos aqui para ajudar com suas dúvidas e sugestões</p>
+            </div>
+
+            <!-- Seção de Contato -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+                <!-- Formulário de Contato -->
+                <div class="contact-card">
+                    <h2 class="text-2xl font-bold mb-8 text-cyan-300">Envie-nos uma mensagem</h2>
+                    <form id="contact-form" class="space-y-6">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Nome</label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   required 
+                                   class="form-input"
+                                   placeholder="Digite seu nome completo">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" 
+                                   id="email" 
+                                   name="email" 
+                                   required
+                                   class="form-input"
+                                   placeholder="seu@email.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Assunto</label>
+                            <div class="relative">
+                                <select id="subject" 
+                                        name="subject" 
+                                        required
+                                        class="w-full bg-white/5 border border-white/10 text-white rounded-full px-4 py-2.5 focus:ring-2 focus:ring-cyan-500 focus:border-transparent appearance-none pr-10">
+                                    <option value="" disabled selected class="bg-gray-800 text-white">Selecione um assunto</option>
+                                    <option value="duvida" class="bg-gray-800 text-white">Dúvida</option>
+                                    <option value="sugestao" class="bg-gray-800 text-white">Sugestão</option>
+                                    <option value="problema" class="bg-gray-800 text-white">Reportar Problema</option>
+                                    <option value="outro" class="bg-gray-800 text-white">Outro</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" class="form-label">Mensagem</label>
+                            <textarea id="message" 
+                                      name="message" 
+                                      rows="5" 
+                                      required
+                                      class="form-textarea"
+                                      placeholder="Como podemos ajudar você?"></textarea>
+                        </div>
+                        
+                        <div class="pt-2">
+                            <button type="submit" class="btn-primary w-full flex items-center justify-center gap-3 py-3 text-lg font-medium rounded-full hover:bg-cyan-500 transition-all duration-300 transform hover:scale-[1.02]">
+                                <i class="fas fa-paper-plane"></i> Enviar Mensagem
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="contact-card">
+                        <h2 class="text-2xl font-bold mb-6 text-cyan-300">Informações de Contato</h2>
+                        <p class="text-gray-300 mb-6">Estamos aqui para ajudar você a aproveitar ao máximo o SurfNotebook. Entre em contato conosco por qualquer dúvida ou sugestão.</p>
+                        
+                        <div class="space-y-5">
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-900/30 flex items-center justify-center text-cyan-400">
+                                    <i class="fas fa-envelope text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-300">E-mail</h3>
+                                    <a href="mailto:contato@penguinsurfnotebook.com" class="text-gray-400 hover:text-cyan-300 transition-colors">contato@penguinsurfnotebook.com</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-900/30 flex items-center justify-center text-cyan-400">
+                                    <i class="fas fa-phone-alt text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-300">Telefone</h3>
+                                    <a href="tel:+55(21)969172719" class="text-gray-400 hover:text-cyan-300 transition-colors">+55 (21) 96917-2719</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start gap-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-cyan-900/30 flex items-center justify-center text-cyan-400">
+                                    <i class="fas fa-map-marker-alt text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-300">Endereço</h3>
+                                    <p class="text-gray-400">Reynisdrangar, s/n<br>Black Sand Coast<br>Vik í Mýrdal - IS, 871</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-6 mt-6 border-t border-white/10">
+                            <h3 class="font-medium text-gray-300 mb-3">Siga-nos</h3>
+                            <div class="flex items-center space-x-4">
+                                <a href="https://youtu.be/dQw4w9WgXcQ" class="w-10 h-10 rounded-full bg-white/5 hover:bg-pink-600 transition-colors flex items-center justify-center text-gray-300 hover:text-white" aria-label="Instagram" target="_blank">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="https://www.linkedin.com/in/matheussopinheiro/" class="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600 transition-colors flex items-center justify-center text-gray-300 hover:text-white" aria-label="LinkedIn" target="_blank">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="https://youtu.be/dQw4w9WgXcQ" class="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-400 transition-colors flex items-center justify-center text-gray-300 hover:text-white" aria-label="Twitter" target="_blank">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <h3 class="text-xl font-bold mb-4 text-cyan-300">Horário de Atendimento</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-gray-300">
+                                <span>Segunda a Sexta</span>
+                                <span>09:00 - 18:00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Sábado</span>
+                                <span>09:00 - 12:00</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Domingo</span>
+                                <span>Fechado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-12">
+                <h2 class="text-2xl font-bold mb-6 text-center text-cyan-300">Onde nos encontrar</h2>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1388.1019999999998!2d-19.0415791!3d63.4030376!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48d74a2a636c8075%3A0x4177410f191fa085!2sH%C3%A1lsanefshellir%20Cave!5e0!3m2!1spt-BR!2sbr!4v1620000000000!5m2!1spt-BR!2sbr" 
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Localização no Mapa">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-6 text-sm text-white/80 relative border-t border-white/10">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center">
+                <p class="text-center">&copy; 2025 SurfNotebook. Todos os direitos reservados.</p>
+                <div class="absolute right-4 flex space-x-4">
+                    <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/matheussopinheiro/" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Twitter" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (menuBtn && mobileMenu) {
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                menuBtn.innerHTML = mobileMenu.classList.contains('hidden') ? 
+                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>' :
+                    '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>';
+            });
+        }
+
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                menuBtn.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>';
+            });
+        });
+
+        const contactForm = document.getElementById('contact-form');
+        if (contactForm) {
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const subject = document.getElementById('subject').value;
+                const message = document.getElementById('message').value.trim();
+                
+                if (!name || !email || !subject || !message) {
+                    alert('Por favor, preencha todos os campos obrigatórios.');
+                    return false;
+                }
+                
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Por favor, insira um endereço de e-mail válido.');
+                    return false;
+                }
+                
+                alert('Mensagem enviada com sucesso! Entraremos em contato em breve.');
+                contactForm.reset();
+                
+                return false;
+            });
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

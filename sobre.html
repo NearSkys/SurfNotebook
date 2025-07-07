@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - SurfNotebook</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        ::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+            background: transparent;
+        }
+        
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        .text-shadow {
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .video-background video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        #mobile-menu {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-black">
+    <div class="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="4611986-uhd_3840_2160_30fps.mp4" type="video/mp4">
+            O seu navegador não suporta a tag de vídeo.
+        </video>
+    </div>
+    <div class="video-overlay"></div>
+
+    <div class="relative z-10 flex flex-col min-h-screen text-white">
+        <header class="w-full px-6 sm:px-10 py-5">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="index.html" class="text-2xl font-bold text-shadow">SurfNotebook</a>
+                <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+                    <a href="index.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Home</a>
+                    <a href="sobre.html" class="text-sm font-medium text-cyan-300 transition-colors">Sobre</a>
+                    <a href="notas.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Notas</a>
+                    <a href="contato.html" class="text-sm font-medium hover:text-cyan-300 transition-colors">Contato</a>
+                </nav>
+                <div class="md:hidden">
+                    <button id="menu-btn" class="focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div id="mobile-menu" class="hidden md:hidden bg-black bg-opacity-70 backdrop-blur-sm w-full">
+            <a href="index.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Home</a>
+            <a href="sobre.html" class="block text-center py-3 text-sm bg-white/10 text-cyan-300 transition-colors">Sobre</a>
+            <a href="notas.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Notas</a>
+            <a href="contato.html" class="block text-center py-3 text-sm hover:bg-white/10 transition-colors">Contato</a>
+        </div>
+
+        <main class="flex-grow py-10 px-4">
+            <div class="container mx-auto">
+                <div class="text-center mb-16">
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-shadow">Sobre o SurfNotebook</h1>
+                    <p class="text-xl text-gray-300 max-w-2xl mx-auto">Conheça nossa história, missão e o time por trás desta incrível jornada</p>
+                </div>
+
+                <section class="mb-20 max-w-4xl mx-auto bg-black/50 backdrop-blur-sm p-8 rounded-xl border border-white/10 mb-12">
+                    <h2 class="text-3xl font-bold mb-6 text-cyan-400">Nossa História</h2>
+                    <div class="space-y-4 text-gray-300">
+                        <p>O SurfNotebook nasceu da confluência estratégica de uma única necessidade existencial: a minha de tirar 10 na matéria de Front-End. Qualquer outra motivação que você leia por aí é mentira corporativa. Aqui prezo pela transparência brutal.</p>
+                        <p>Eu gosto de surfar? Não. Na verdade, eu nem saio de casa e tenho uma relação questionável com a luz do sol. A escolha do tema "surf" foi puramente estética, baseada no que eu achei que um algoritmo de tendências consideraria "engajador". Não pisei na areia uma única vez durante todo o processo. Água, só a do filtro.</p>
+                        <p>Hoje, a plataforma existe? Sinceramente, não tenho certeza. Ajuda surfistas? Absolutamente não. Mas, por um bug inexplicável ou talvez uma intervenção cósmica, ela se tornou a rede social preferida de um bando de pinguins da Antártida. Eles são 100% dos meus usuários ativos. Não entendo o que eles fazem lá, mas os gráficos de acesso são impressionantes e foi isso que me garantiu a nota máxima. Problema resolvido.</p>
+                    </div>
+                </section>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-20">
+                    <div class="bg-black/50 backdrop-blur-sm p-8 rounded-xl border border-white/10">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Nossa Missão</h3>
+                        <p class="text-gray-300">Fornecer ao meu professor um link clicável que não retornasse um erro 404 no dia da apresentação. Qualquer benefício subsequente a qualquer forma de vida, humana ou aviária, é puramente acidental e não será replicado.</p>
+                    </div>
+                    <div class="bg-black/50 backdrop-blur-sm p-8 rounded-xl border border-white/10">
+                        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Nossa Visão</h3>
+                        <p class="text-gray-300">A visão de futuro? Não existe visão de longo prazo. A estratégia era de encerramento. O plano, desde o início, era simples e o mais crucial de todos: desligar tudo assim que o período para contestar a avaliação terminasse. O verdadeiro sucesso é a eventual inexistência disto aqui.</p>
+                    </div>
+                </div>
+
+                <section class="max-w-6xl mx-auto">
+                    <h2 class="text-3xl font-bold text-center mb-12 text-shadow">Conheça Nosso Time</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="team-card rounded-xl overflow-hidden p-6 text-center">
+                            <div class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-2 border-cyan-400/30">
+                                <img src="images/profile.PNG" alt="Matheus Pinheiro" class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="text-xl font-bold mb-1">Matheus Pinheiro</h3>
+                            <p class="text-cyan-400 mb-3">Fundador & Desenvolvedor</p>
+                            <p class="text-gray-300 text-sm">Estudante de Engenharia de Software. O único surf que pratiquei foi na internet, procurando soluções no Stack Overflow às 3 da manhã para fazer isso funcionar. A "visão" era o meu prazo de entrega se aproximando de forma ameaçadora. Cumpri o objetivo.</p>
+                        </div>
+                        
+                        <div class="team-card rounded-xl overflow-hidden p-6 text-center">
+                            <div class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-2 border-cyan-400/30">
+                                <img src="images/profile.PNG" alt="Matheus Pinheiro" class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="text-xl font-bold mb-1">Matheus Pinheiro</h3>
+                            <p class="text-cyan-400 mb-3">Designer & Marketing</p>
+                            <p class="text-gray-300 text-sm">Sim, essa parte também fui eu. O design foi o que veio com o framework. O marketing foi inventar uma história sobre surfistas apaixonados. A conclusão é que minha habilidade de criar uma identidade visual e uma campanha de marketing é tão boa que, sem querer, convenci milhões de pinguins de que este era o app perfeito para eles. Não me pergunte como.</p>
+                        </div>
+                        
+                        <div class="team-card rounded-xl overflow-hidden p-6 text-center">
+                            <div class="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden border-2 border-cyan-400/30">
+                                <img src="images/penguin2.png" alt="Penguin Young" class="w-full h-full object-cover">
+                            </div>
+                            <h3 class="text-xl font-bold mb-1">Penguin Young</h3>
+                            <p class="text-cyan-400 mb-3">Desenvolvedor Full Stack</p>
+                            <p class="text-gray-300 text-sm">O código original era um desastre. Sorte a minha que um pinguim curioso e com muito tempo livre achou o repositório no GitHub. Ele começou a submeter pull requests corrigindo meus erros. Contratei-o imediatamente (não pago salário, mas também não cobro pela hospedagem). Ele cuida de tudo agora. Dizem que ele é o melhor programador da colônia dele.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <footer class="py-6 text-sm text-white/80 relative border-t border-white/10">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-center items-center">
+                    <p class="text-center">&copy; 2025 SurfNotebook. Todos os direitos reservados.</p>
+                    <div class="absolute right-4 flex space-x-4">
+                        <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Instagram" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/matheussopinheiro/" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://youtu.be/dQw4w9WgXcQ" class="text-white/70 hover:text-cyan-400 transition-colors" aria-label="Twitter" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
